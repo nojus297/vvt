@@ -14,8 +14,10 @@ class CreateStopsTable extends Migration
     public function up()
     {
         Schema::create('stops', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->timestamps();
+            $table->string('stop_id', 8)->primary();
+            $table->string('name', 64);
+            $table->decimal('lat', 10, 7);
+            $table->decimal('lng', 10, 7);
         });
     }
 
