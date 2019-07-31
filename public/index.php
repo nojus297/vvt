@@ -7,7 +7,7 @@
  * @author   Taylor Otwell <taylor@laravel.com>
  */
 
-define(PROJECT_DIR, __DIR__.'/../../vvtProject/');
+define(PROJECT_DIR, __DIR__.'/../');
 
 define('LARAVEL_START', microtime(true));
 
