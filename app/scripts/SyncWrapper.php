@@ -4,7 +4,8 @@
         function __construct(string $type)
         {
             $key = array(
-                'stops' => new \App\scripts\StopLoader2()
+                'routes' => new \App\scripts\RouteLoader(),
+                'stops' => new \App\scripts\StopLoader2(),
             );
             foreach($key as $name => $loader)
             {
