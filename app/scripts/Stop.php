@@ -14,7 +14,7 @@ class Stop implements Comparable
 
     public function equal(Comparable $b)
     {
-        $t = this;
+        $t = $this;
 
         return $t->hash == $b->hash && $t->stop_id == $b->stop_id &&
                $t->name == $b->name && $t->lat == $b->lat &&
