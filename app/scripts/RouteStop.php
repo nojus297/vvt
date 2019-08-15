@@ -4,7 +4,7 @@ namespace App\scripts;
 
 class RouteStop implements Comparable
 {
-    var $id, $type, $no, $stop_id, $direction, $degree, $hash;
+    var $id, $route_id, $stop_id, $direction, $degree, $hash;
 
     public function get_hash()
     {
@@ -22,6 +22,7 @@ class RouteStop implements Comparable
 
         $stop = (array) $this;
         unset($stop['hash']);
+        unset($stop['degree']);
 
         $table->insert($stop);
     }
@@ -36,13 +37,12 @@ class RouteStop implements Comparable
     public function stringify()
     {
         $t = $this;
-        $format = "%d %s %s %s %d";
+        $format = "%s %s %s %d";
 
         return sprintf
         (
             $format,
-            $t->type,
-            $t->no,
+            $t->route_id,
             $t->stop_id,
             $t->direction,
             $t->degree
@@ -52,16 +52,15 @@ class RouteStop implements Comparable
     private function make_hash()
     {
         $t = $this;
-        $str = $t->type . $t->no . $t->stop_id . $t->direction;
+        $str = $t->route_id . $t->stop_id . $t->direction;
         $this->hash = md5($str, true);
     }
 
-    function __construct($type, $no, $stop_id, $direction)
+    function __construct(array $route_stop)
     {
-        $this->type = $type;
-        $this->no = $no;
-        $this->stop_id = $stop_id;
-        $this->direction = $direction;
+        $this->route_id = $route_stop['route_id'];
+        $this->stop_id = $route_stop['stop_id'];
+        $this->direction = $route_stop['direction'];
         $this->make_hash();
     }
 
