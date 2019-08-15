@@ -21,7 +21,7 @@
 
             if(!is_array($this->database_data) || !is_array($this->web_data))
             {
-                throw new Exception('Data is not an array. Not loaded?');
+                throw new \Exception('Data is not an array. Not loaded?');
             }
 
             foreach($this->web_data as $item)
