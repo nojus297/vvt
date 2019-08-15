@@ -5,99 +5,74 @@ namespace App\scripts;
 class RouteStopLoader implements Loadable 
 {
     private $request;
-    private $loaded_stops;
+    private $loaded_route_stops;
 
     const TRAFI_API_URL = 'https://www.trafi.com/api/schedules/vilnius/';
-    const TRANSPORT_SUBTYPES = array('Greitasis autobusas',
-                                     'Autobusas', 'Troleibusas');
-    const TRANSPORT_TYPES = array('trolleybus', 'bus');  
+    const TRANSPORT_TYPES = array('trolleybus', 'bus');
+    const VALID_TRACKS = array('a-b', 'b-a');
 
-    private function get_transport_url($type)
-    {
-        return self::TRAFI_API_URL . "all?transportType=" . $type;
-    }
     private function get_route_url($type, $route_id)
     {
         return self::TRAFI_API_URL . "schedule?scheduleId=" . $route_id . 
                "&transportType=" . $type;
     }
 
-    private function parse_stops_by_route_id($type, $route_id)
+    public function parse_tracks(string $route_id, string $type)
     {
-        
-        $url = $this->get_route_url($type, $route_id);
+        $url = $this->get_route_url($route_id, $type);
         $raw = $this->request->get($url);
         $data = json_decode($raw);
 
-        echo($data->id . "\n");
-
-        foreach($data->stops as $stop)
+        foreach($data->tracks as $track)
         {
-            $temp = new Stop(
-                $stop->id, 
-                $stop->name,
-                $stop->lat,
-                $stop->lng
-            );
-
-            $this->loaded_stops[$temp->get_hash()] = $temp;
-        }
-    }
-
-    private function parse_stops_by_subtype($type, $subtype)
-    {
-        if(!in_array($subtype->transportName, self::TRANSPORT_SUBTYPES))
-        {
-            return;
-        }
-
-        foreach($subtype->schedules as $route)
-        {
-            $this->parse_stops_by_route_id($type, $route->scheduleId);
-        }
-    }
-
-    function load_all_stops()
-    {
-        $this->loaded_stops = array();
-
-        foreach (self::TRANSPORT_TYPES as $type)
-        {
-            $raw = $this->request->get($this->get_transport_url($type));
-            $data = json_decode($raw);
-
-            foreach($data->schedulesByTransportId as $subtype)
+            if(!in_array($track->id, self::VALID_TRACKS))
             {
-                $this->parse_stops_by_subtype($type, $subtype);
+                continue;
+            }
 
-            }    
+            foreach($track->stops as $stop)
+            {
+                $temp = new RouteStop([
+                    'route_id' => $route_id,
+                    'stop_id' => $stop->stopId,
+                    'direction' => $track->id,
+                ]);
+                $loaded_route_stops[$temp->get_hash()] = $temp;
+            }
         }
+
     }
 
     public function load_from_web()
     {
-        $this->load_all_stops();
+        echo("Warning: routes are loaded from database, not from web");
 
-        return $this->loaded_stops;
+        $routes = \App\Route::all();
+
+        foreach($routes as $route)
+        {
+            $this->parse_tracks(
+                $route->route_id,
+                [1  => 'trolleybus', 2 => 'bus'][$route->type],
+            );
+        }
+        
+        return $this->loaded_route_stops;
     }
 
     public function load_from_database()
     {
-        $db = \App\stop::all();
-        $stops = array();
+        $db = \App\RouteStop::all();
+        $route_stops = array();
 
-        foreach($db as $stop)
+        foreach($db as $route_stop)
         {
-            $temp = new Stop(
-                $stop->stop_id, 
-                $stop->name,
-                $stop->lat,
-                $stop->lng
-            );
-            $stops[$temp->get_hash()] = $temp;
+            $temp = new RouteStop((array) $route_stop);
+
+            $route_stops[$temp->get_hash()] = $temp;
         }
 
-        return $stops;
+        return $route_stops;
     }
 
     public function __construct(){
