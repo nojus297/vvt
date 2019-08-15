@@ -19,12 +19,13 @@ class RouteStopLoader implements Loadable
 
     public function parse_tracks(string $route_id, string $type)
     {
-        $url = $this->get_route_url($route_id, $type);
+        $url = $this->get_route_url($type, $route_id);
         $raw = $this->request->get($url);
         $data = json_decode($raw);
 
         foreach($data->tracks as $track)
         {
+            //echo($track->name . "\n");
             if(!in_array($track->id, self::VALID_TRACKS))
             {
                 continue;
@@ -37,7 +38,7 @@ class RouteStopLoader implements Loadable
                     'stop_id' => $stop->stopId,
                     'direction' => $track->id,
                 ]);
-                $loaded_route_stops[$temp->get_hash()] = $temp;
+                $this->loaded_route_stops[$temp->get_hash()] = $temp;
             }
         }
 
@@ -45,7 +46,7 @@ class RouteStopLoader implements Loadable
 
     public function load_from_web()
     {
-        echo("Warning: routes are loaded from database, not from web");
+        echo("Warning: routes are loaded from database, not from web\n");
 
         $routes = \App\Route::all();
 
@@ -67,7 +68,11 @@ class RouteStopLoader implements Loadable
 
         foreach($db as $route_stop)
         {
-            $temp = new RouteStop((array) $route_stop);
+            $temp = new RouteStop([
+                'route_id' => $route_stop->route_id,
+                'stop_id' => $route_stop->stop_id,
+                'direction' => $route_stop->direction,
+            ]);
 
             $route_stops[$temp->get_hash()] = $temp;
         }
