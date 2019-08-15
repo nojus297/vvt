@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Route_stop extends Model
+class RouteStop extends Model
 {
     public $timestamps = false;
 }
