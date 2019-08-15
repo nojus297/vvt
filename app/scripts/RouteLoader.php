@@ -8,8 +8,8 @@ class RouteLoader implements Loadable
     private $loaded_routes;
 
     const TRAFI_API_URL = 'https://www.trafi.com/api/schedules/vilnius/';
-    const TRANSPORT_SUBTYPES = array('Greitasis autobusas',
-                                     'Autobusas', 'Troleibusas');
+    const TRANSPORT_SUBTYPES = ['Troleibusas'];//array('Greitasis autobusas',
+                                     //'Autobusas', 'Troleibusas');
     const TRANSPORT_TYPES = array('trolleybus', 'bus');  
 
     private function get_transport_url($type)
