@@ -41,6 +41,9 @@
             "database/seeds",
             "database/factories",
             "app/scripts"
+        ],
+        "files": [
+            "app/scripts/functions.php"
         ]
     },
     "autoload-dev": {
