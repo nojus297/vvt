@@ -9,7 +9,7 @@
         private function parse_route_stop($rs)
         {
             $url = get_departures_url($rs->route_id, $rs->stop_id);
-            $raw = $this->request($url);
+            $raw = $this->request->get($url);
             $timetable = json_decode($raw)->scheduled->days[0];
             $departures = [];
 
@@ -26,8 +26,8 @@
                 }
                 array_push($departures, [
                     'date' => date("Y-m-d"),
-                    'route_stop_id' => $rs->route_stop_id,  
-                    'expected_time' => $departure->exactTime(),
+                    'route_stop_id' => $rs->id,  
+                    'expected_time' => $departure->exactTime,
                 ]);
             }
             $table = \DB::table('departures');
@@ -44,6 +44,8 @@
                 {
                     info("{$i} / " . count($route_stops));
                 }
+
+                $this->parse_route_stop($route_stop);
 
             }
         }
