@@ -4,7 +4,7 @@
 
     class DeparturesLoader
     {
-        var $request;
+        private $request;
 
         private function parse_route_stop($rs)
         {
