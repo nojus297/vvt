@@ -17,7 +17,7 @@ class CreateDeparturesTable extends Migration
             $table->date('date')->index();
             $table->bigInteger('route_stop_id')->index();
             $table->time('expected_time');
-            $table->time('actual_time');
+            $table->time('actual_time')->nullable();
         });
     }
 
