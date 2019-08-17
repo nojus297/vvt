@@ -5,9 +5,7 @@
 
 ### Code quality:
  - The scripts folder should probably be divided to subfolders
- - Rename StopLoader2
  - Some general trafi loading class
- - Make use of the config file vvt.php
 
 ### Fixes:
  - Exclude (tik x-xx) routes probably
