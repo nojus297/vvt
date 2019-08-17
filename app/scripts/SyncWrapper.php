@@ -5,7 +5,7 @@
         {
             $key = array(
                 'routes' => new \App\scripts\RouteLoader(),
-                'stops' => new \App\scripts\StopLoader2(),
+                'stops' => new \App\scripts\StopLoader(),
                 'route_stops' => new \App\scripts\RouteStopLoader(),
             );
             foreach($key as $name => $loader)
