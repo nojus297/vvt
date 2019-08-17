@@ -7,24 +7,19 @@ class RouteLoader implements Loadable
     private $request;
     private $loaded_routes;
 
-    const TRAFI_API_URL = 'https://www.trafi.com/api/schedules/vilnius/';
-    const TRANSPORT_SUBTYPES = ['Troleibusas'];//array('Greitasis autobusas',
-                                     //'Autobusas', 'Troleibusas');
-    const TRANSPORT_TYPES = array('trolleybus', 'bus');  
-
     private function get_transport_url($type)
     {
-        return self::TRAFI_API_URL . "all?transportType=" . $type;
+        return config('vvt.trafi_api_url') . "all?transportType=" . $type;
     }
     private function get_route_url($type, $route_id)
     {
-        return self::TRAFI_API_URL . "schedule?scheduleId=" . $route_id . 
+        return config('vvt.trafi_api_url') . "schedule?scheduleId=" . $route_id. 
                "&transportType=" . $type;
     }
 
     private function parse_routes_by_subtype($type, $subtype)
     {
-        if(!in_array($subtype->transportName, self::TRANSPORT_SUBTYPES))
+        if(!in_array($subtype->transportName, config('vvt.transport_subtypes')))
         {
             return;
         }
@@ -45,7 +40,7 @@ class RouteLoader implements Loadable
     {
         $this->loaded_routes = array();
 
-        foreach (self::TRANSPORT_TYPES as $type)
+        foreach (config('vvt.transport_types') as $type)
         {
             $raw = $this->request->get($this->get_transport_url($type));
             $data = json_decode($raw);

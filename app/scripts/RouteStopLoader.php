@@ -7,13 +7,9 @@ class RouteStopLoader implements Loadable
     private $request;
     private $loaded_route_stops;
 
-    const TRAFI_API_URL = 'https://www.trafi.com/api/schedules/vilnius/';
-    const TRANSPORT_TYPES = array('trolleybus', 'bus');
-    const VALID_TRACKS = array('a-b', 'b-a');
-
     private function get_route_url($type, $route_id)
     {
-        return self::TRAFI_API_URL . "schedule?scheduleId=" . $route_id . 
+        return config('vvt.trafi_api_url') . "schedule?scheduleId=" . $route_id. 
                "&transportType=" . $type;
     }
 
@@ -25,8 +21,7 @@ class RouteStopLoader implements Loadable
 
         foreach($data->tracks as $track)
         {
-            //echo($track->name . "\n");
-            if(!in_array($track->id, self::VALID_TRACKS))
+            if(!in_array($track->id, config('vvt.valid_tracks')))
             {
                 continue;
             }
@@ -46,15 +41,19 @@ class RouteStopLoader implements Loadable
 
     public function load_from_web()
     {
-        echo("Warning: routes are loaded from database, not from web\n");
+        info("Warning: routes are loaded from database, not from web");
 
         $routes = \App\Route::all();
 
-        foreach($routes as $route)
+        foreach($routes as $i => $route)
         {
+            if(config('vvt.log'))
+            {
+                info("{$i}/" . count($routes));
+            }
             $this->parse_tracks(
                 $route->route_id,
-                [1  => 'trolleybus', 2 => 'bus'][$route->type],
+                config('vvt.types_conversion')[$route->type],
             );
         }
         
