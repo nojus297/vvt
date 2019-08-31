@@ -9,6 +9,7 @@
 
 ### Fixes:
  - Exclude (tik x-xx) routes probably
+ - If not then make sure to replace space with '+'
 
 ### New features:
  - script to calculate degree in route_stops
