@@ -42,21 +42,28 @@
 
         }
 
-        public function apply()
+
+        public function apply(bool $delete = true, bool $insert = true)
         {
             if(!is_array($this->to_add) || !is_array($this->to_delete))
             {
                 throw new Exception('Diffs are not arrays. Not compared?');
             }
 
-            foreach($this->to_delete as $item)
+            if($delete)
             {
-                $item->delete();
+                foreach($this->to_delete as $item)
+                {
+                    $item->delete();
+                }
             }
 
-            foreach($this->to_add as $item)
+            if($delete)
             {
-                $item->insert();
+                foreach($this->to_add as $item)
+                {
+                    $item->insert();
+                }
             }
         }
 
