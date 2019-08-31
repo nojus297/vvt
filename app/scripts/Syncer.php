@@ -58,7 +58,7 @@
                 }
             }
 
-            if($delete)
+            if($insert)
             {
                 foreach($this->to_add as $item)
                 {
