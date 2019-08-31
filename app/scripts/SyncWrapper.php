@@ -38,11 +38,13 @@
             echo("\nTo be added: "  .count($syncer->to_add) . "\n");
             echo("\nTo be deleted: " .count($syncer->to_delete) . "\n");
 
-            $answer = readline("Apply changes? (y/n) ");
-            if($answer == "y")
-            {
-                $syncer->apply();
-            }
+            $answer = readline("Delete shown? (y/n) ");
+            $delete = $answer == "y";
+
+            $answer = readline("Insert shown? (y/n) ");
+            $insert = $answer == "y";
+
+            $syncer->apply($delete, $insert);
         }
     }
 ?>
