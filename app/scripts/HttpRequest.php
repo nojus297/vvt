@@ -8,6 +8,7 @@ class HttpRequest
 
     public function get(string $url)
     {
+        $url = str_replace(' ', '+', $url); //DIRTY FIX TODO
         $request = $this->client->get($url);
 
         return $request->getBody();

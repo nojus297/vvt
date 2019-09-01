@@ -28,8 +28,9 @@ class RouteLoader implements Loadable
         {
             if(strpos($route->scheduleId, '(') !== false)
             {
-                continue; //exclude tik/nuo/iki marsrutus
+                //continue; //exclude tik/nuo/iki marsrutus
             }
+            else continue;
 
             $temp = new Route(
                 $route->scheduleId,
