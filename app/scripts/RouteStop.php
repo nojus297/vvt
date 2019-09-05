@@ -30,7 +30,8 @@ class RouteStop implements Comparable
     public function delete()
     {
         $table = \DB::table('route_stops');
-
+        //info($this->id);
+        //echo("lol");
         $table->where('id', $this->id)->delete();
     }
 
@@ -58,6 +59,10 @@ class RouteStop implements Comparable
 
     function __construct(array $route_stop)
     {
+        if(array_key_exists('id', $route_stop))
+        {
+            $this->id = $route_stop['id'];
+        }    
         $this->route_id = $route_stop['route_id'];
         $this->stop_id = $route_stop['stop_id'];
         $this->direction = $route_stop['direction'];
