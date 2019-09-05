@@ -6,6 +6,7 @@
 ### Code quality:
  - The scripts folder should probably be divided to subfolders
  - Some general trafi loading class
+ - Class to parse objects from trafi to custom for easier maintenance
 
 ### Fixes:
  - Exclude (tik x-xx) routes probably
