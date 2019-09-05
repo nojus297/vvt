@@ -68,6 +68,7 @@ class RouteStopLoader implements Loadable
         foreach($db as $route_stop)
         {
             $temp = new RouteStop([
+                'id' => $route_stop->id,
                 'route_id' => $route_stop->route_id,
                 'stop_id' => $route_stop->stop_id,
                 'direction' => $route_stop->direction,
