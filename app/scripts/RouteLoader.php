@@ -26,11 +26,11 @@ class RouteLoader implements Loadable
 
         foreach($subtype->schedules as $route)
         {
-            if(strpos($route->scheduleId, '(') !== false)
-            {
+           // if(strpos($route->scheduleId, '(') !== false)
+          //  {
                 //continue; //exclude tik/nuo/iki marsrutus
-            }
-            else continue;
+            //}
+            //else continue;
 
             $temp = new Route(
                 $route->scheduleId,
