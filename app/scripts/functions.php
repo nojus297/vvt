@@ -22,4 +22,19 @@
         $url .= "scheduleId={$route_id}&trackId={$dir}";
         return $url;
     }
+    function distance($from, $to, $earthRadius = 6371000)
+    {
+        // convert from degrees to radians
+        $latFrom = deg2rad($from->lat);
+        $lonFrom = deg2rad($from->lng);
+        $latTo = deg2rad($to->lat);
+        $lonTo = deg2rad($to->lng);
+      
+        $latDelta = $latTo - $latFrom;
+        $lonDelta = $lonTo - $lonFrom;
+      
+        $angle = 2 * asin(sqrt(pow(sin($latDelta / 2), 2) +
+          cos($latFrom) * cos($latTo) * pow(sin($lonDelta / 2), 2)));
+        return $angle * $earthRadius;
+    }
 ?>
