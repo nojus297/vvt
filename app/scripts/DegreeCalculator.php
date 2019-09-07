@@ -8,19 +8,14 @@ class DegreeCalculator
 
     private function get_stop_in_range(object $coords, $route_id, $dir)
     {
-        //eval(\Psy\sh());
-        //info("geting");
-        //info($route_id);
         foreach($this->filtered_stops[$route_id][$dir] as $stop)
         {
             $distance = distance($coords, (object)[
                 'lat' => $stop->lat,
                 'lng' => $stop->lng
             ]);
-            //info($distance);
             if($distance <= config('vvt.min_degree_calc_range'))
             {
-                // /info($distance);
                 return $stop;
             }
         }
@@ -62,7 +57,6 @@ class DegreeCalculator
     {
         foreach($vehicles as $vehicle)
         {
-            //info("loop here");
             $closest_stop = $this->get_stop_in_range(
                 $vehicle->coordinate, $route_id, $dir);
 
@@ -77,19 +71,15 @@ class DegreeCalculator
 
     public function load()
     {
-        //info("load!!!");
         $db = \App\Route::all();
 
         foreach($db as $route)
         {
             foreach(['a-b', 'b-a'] as $dir)
             {
-                //info("in double loop");
                 $url = get_trafi_trafic_url($route->route_id, $dir);
                 $raw = $this->request->get($url);
                 $vehicles = json_decode($raw)->mapMarkers;
-                //info($url);
-                //return json_decode($raw);
                 $this->parse_vehicles($vehicles, $route->route_id, $dir);
             }
         }
@@ -104,16 +94,12 @@ class DegreeCalculator
     private function filter_stops()
     {
         $route_stops = \DB::table('route_stops')->get();
-        // /$stops = \DB::table('stops');
 
         foreach($route_stops as $rs)
         {
-            //info((string) $rs);
-            $stop = \DB::table('stops')->where('stop_id',
-            $rs->stop_id)->get()[0];
-             //info($rs->stop_id);
-             //var_dump($stop);
-            //if($stop == null) info("no stop found");
+            $stop = \DB::table('stops')->where(
+                'stop_id', $rs->stop_id
+            )->get()[0];
             $this->filtered_stops[$rs->route_id][$rs->direction][] = $stop;
         }
     }
