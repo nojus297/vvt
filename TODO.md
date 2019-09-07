@@ -7,11 +7,11 @@
  - The scripts folder should probably be divided to subfolders
  - Some general trafi loading class
  - Class to parse objects from trafi to custom for easier maintenance
+ - clean trash commentin
 
 ### Fixes:
  - Exclude (tik x-xx) routes probably
  - If not then make sure to replace space with '+'
 
 ### New features:
- - script to calculate degree in route_stops
  - script to fill the actual_time columns
