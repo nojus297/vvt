@@ -23,6 +23,8 @@
 
         'trafi_api_url' => 'https://www.trafi.com/api/schedules/vilnius/',
 
+        'stops_traffic_url' => 'https://stops.lt/vilnius/gps.txt',
+
         'valid_tracks' => [
             'a-b',
             'b-a',
