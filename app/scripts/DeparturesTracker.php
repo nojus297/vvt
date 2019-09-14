@@ -1,7 +1,7 @@
 <?php
     class DeparturesTracker
     {
-        private $request, $filtered_stops, $degrees;
+        private $request, $filtered_stops, $degrees, $route_ids;
 
         public function __construct()
         {
@@ -24,7 +24,20 @@
 
         private function parse_vehicle($vehicle)
         {
-            
+            $route_id = $this->route_ids[$vehicle->type][$vehicle->no];
+            $stops = $this->get_close_stops($vehicle->coords, $route_id);
+
+            foreach($stops as $stop)
+            {
+                $route_id = $this->route_ids[$vehicle->type][$vehicle->no];
+                $rs_id = $stop->route_stop_id;
+                $degree_diff = abs($vehicle->degree - $this->degrees[$rs_id]); 
+
+                if($degree_diff <= config('vvt.max_track_degree_diff'))
+                {
+
+                }
+            }
         }
 
         private function load_degrees()
@@ -34,6 +47,16 @@
             foreach($degrees as $row)
             {
                 $this->degrees[$row->route_stop_id] = $row->degree;
+            }
+        }
+
+        private function load_routes()
+        {
+            $routes = \DB::table('routes')->get();
+
+            foreach($routes as $route)
+            {
+                $this->route_ids[$route->type][$route->no] = $route->route_id;
             }
         }
 
@@ -47,8 +70,9 @@
                     'stop_id', $rs->stop_id
                 )->get()[0];
                 $stop->direction = $rs->direction;
+                $stop->route_stop_id = $rs->id;
                 unset($stop->name);
-                $this->filtered_stops[$rs->route_id] = $stop;
+                $this->filtered_stops[$rs->route_id][] = $stop;
             }
         }
 
@@ -57,16 +81,13 @@
             $stops = array();
             foreach($this->filtered_stops[$route_id] as $stop)
             {
-                $distance = distance($coords, (object)[
-                    'lat' => $stop->lat,
-                    'lng' => $stop->lng
-                ]);
+                $distance = distance($coords, $stop);
                 if($distance <= config('vvt.min_track_range'))
                 {
                     $stops[] = $stop;
                 }
             }
-            return null;
+            return [];
         }
 
         private function get_vehicles()
@@ -83,7 +104,7 @@
                 $vehicles[] = (object)[
                     'type' => (int) $dt[0],//config('vvt.types_conversion')[$dt[0]],
                     'no' => $dt[1],
-                    'coord' => (object)[
+                    'coords' => (object)[
                         'lat' => ((int) $dt[3]) / 1000000,
                         'lng' => ((int) $dt[2]) / 1000000,
                     ],
