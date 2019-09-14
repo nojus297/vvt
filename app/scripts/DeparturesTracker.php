@@ -6,6 +6,9 @@
         public function __construct()
         {
             $this->request = new App\scripts\HttpRequest();
+            $this->filter_stops();
+            $this->load_degrees();
+            $this->load_routes();
         }
 
         public function loop()
@@ -13,7 +16,7 @@
             while((new DateTime()) < config('vvt.track_up_to'))
             {
                 $vehicles = $this->get_vehicles();
-
+                info('loop');
                 foreach($vehicles as $vehicle)
                 {
                     $this->parse_vehicle($vehicle);
@@ -24,12 +27,6 @@
 
         private function process_departure($vehicle, $stop)
         {
-            $start = count($departures[$stop->route_stop_id]) - 1;
-            for($i = $start; $i >= 0; $i--)
-            {
-
-            }
-
             foreach(array_slice($this->departures, -4) as $departure)
             {
                 if($this->coord_hash($vehicle) == $departure->hash)
@@ -39,9 +36,29 @@
             }
 
             $now = new DateTime();
-            foreach(array_reverse(array_slice($this->departures, -4)) as $dep)
+            $start = count($this->departures[$stop->route_stop_id]) - 1;
+            for($i = $start; $i >= 0 && $start - $i < 4; $i--)
             {
-                
+                $diff = $this->departures[$i]->time->getTimestamp() -
+                        $now->getTimestamp(); 
+                if($diff < 5)
+                {
+                    continue;
+                }
+                $departure = (object)[
+                    'time' => $now,
+                    'hash' => $this->coord_hash($vehicle),
+                ];
+                if($diff < 21) //update
+                {
+                    $this->departures[$i] = $departure;
+                }
+                else
+                {
+                    $this->departures[] = $departure;
+                }
+
+                return;
             }
         }
 
