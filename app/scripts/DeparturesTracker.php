@@ -1,7 +1,7 @@
 <?php
     class DeparturesTracker
     {
-        private $request, $filtered_stops, $degrees, $route_ids;
+        private $request, $filtered_stops, $degrees, $route_ids,  $departures;
 
         public function __construct()
         {
@@ -16,10 +16,38 @@
 
                 foreach($vehicles as $vehicle)
                 {
-
+                    $this->parse_vehicle($vehicle);
                 }
                 sleep(4);
             }
+        }
+
+        private function process_departure($vehicle, $stop)
+        {
+            $start = count($departures[$stop->route_stop_id]) - 1;
+            for($i = $start; $i >= 0; $i--)
+            {
+
+            }
+
+            foreach(array_slice($this->departures, -4) as $departure)
+            {
+                if($this->coord_hash($vehicle) == $departure->hash)
+                {
+                    return;
+                }
+            }
+
+            $now = new DateTime();
+            foreach(array_reverse(array_slice($this->departures, -4)) as $dep)
+            {
+                
+            }
+        }
+
+        private function coord_hash($coords)
+        {
+            return substr(md5($coords->lat . $coords->lng), 0, 5);
         }
 
         private function parse_vehicle($vehicle)
@@ -35,7 +63,7 @@
 
                 if($degree_diff <= config('vvt.max_track_degree_diff'))
                 {
-
+                    $this->process_departure($vehicle, $stop);
                 }
             }
         }
