@@ -27,6 +27,8 @@
 
         'min_track_range' => 25,
 
+        'max_track_degree_diff' => 36,
+
         'trafi_api_url' => 'https://www.trafi.com/api/schedules/vilnius/',
 
         'valid_tracks' => [
