@@ -1,7 +1,7 @@
 <?php
     class DeparturesTracker
     {
-        private $request, $filtered_stops;
+        private $request, $filtered_stops, $degrees;
 
         public function __construct()
         {
@@ -25,6 +25,16 @@
         private function parse_vehicle($vehicle)
         {
             
+        }
+
+        private function load_degrees()
+        {
+            $degrees = \DB::table('degree_calc')->get();
+
+            foreach($degrees as $row)
+            {
+                $this->degrees[$row->route_stop_id] = $row->degree;
+            }
         }
 
         private function filter_stops()
