@@ -8,9 +8,43 @@
             $this->request = new App\scripts\HttpRequest();
         }
 
-        
+        public function loop()
+        {
+            while((new DateTime()) < config('vvt.track_up_to'))
+            {
+                $vehicles = $this->get_vehicles();
 
-        public function load_stops()
+                foreach($vehicles as $vehicle)
+                {
+
+                }
+                sleep(4);
+            }
+        }
+
+        private function parse_vehicle($vehicle)
+        {
+            
+        }
+
+        private function get_close_stops(object $coords, $route_id)
+        {
+            $stops = array();
+            foreach($this->filtered_stops[$route_id] as $stop)
+            {
+                $distance = distance($coords, (object)[
+                    'lat' => $stop->lat,
+                    'lng' => $stop->lng
+                ]);
+                if($distance <= config('vvt.min_track_range'))
+                {
+                    $stops[] = $stop;
+                }
+            }
+            return null;
+        }
+
+        private function get_vehicles()
         {
             $url = config('vvt.stops.lt_vehicles_url');
             $data = $this->request->get($url);
