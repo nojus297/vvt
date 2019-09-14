@@ -1,7 +1,7 @@
 <?php
     class DeparturesTracker
     {
-        private $request;
+        private $request, $filtered_stops;
 
         public function __construct()
         {
@@ -25,6 +25,21 @@
         private function parse_vehicle($vehicle)
         {
             
+        }
+
+        private function filter_stops()
+        {
+            $route_stops = \DB::table('route_stops')->get();
+    
+            foreach($route_stops as $rs)
+            {
+                $stop = \DB::table('stops')->where(
+                    'stop_id', $rs->stop_id
+                )->get()[0];
+                $stop->direction = $rs->direction;
+                unset($stop->name);
+                $this->filtered_stops[$rs->route_id] = $stop;
+            }
         }
 
         private function get_close_stops(object $coords, $route_id)
