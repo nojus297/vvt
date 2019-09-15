@@ -1,24 +1,29 @@
 <?php
+
+    namespace App\scripts; 
     class DeparturesTracker
     {
         private $request, $filtered_stops, $degrees, $route_ids,  $departures;
 
         public function __construct()
         {
-            $this->request = new App\scripts\HttpRequest();
+            $this->request = new HttpRequest();
             $this->filter_stops();
             $this->load_degrees();
             $this->load_routes();
+            $this->departures = array();
+            info('init completed');
         }
 
         public function loop()
         {
-            while((new DateTime()) < config('vvt.track_up_to'))
+            while((new \DateTime()) < config('vvt.track_up_to'))
             {
                 $vehicles = $this->get_vehicles();
                 info('loop');
-                foreach($vehicles as $vehicle)
+                foreach($vehicles as $i => $vehicle)
                 {
+                    //info("{$i} / " . count($vehicles));
                     $this->parse_vehicle($vehicle);
                 }
                 sleep(4);
@@ -27,7 +32,20 @@
 
         private function process_departure($vehicle, $stop)
         {
-            foreach(array_slice($this->departures, -4) as $departure)
+            info("{$vehicle->type} {$vehicle->no} arrived to {$stop->name}");
+            $now = new \DateTime();
+            if(!array_key_exists($stop->route_stop_id, $this->departures))
+            {
+                $departure = (object)[
+                    'time' => $now,
+                    'hash' => $this->coord_hash($vehicle),
+                ];
+                $this->departures[$stop->route_stop_id][] = $departure;
+
+                return;
+            }
+            $stop_departures = &$this->departures[$stop->route_stop_id];
+            foreach(array_slice($stop_departures, -4) as $departure)
             {
                 if($this->coord_hash($vehicle) == $departure->hash)
                 {
@@ -35,12 +53,11 @@
                 }
             }
 
-            $now = new DateTime();
-            $start = count($this->departures[$stop->route_stop_id]) - 1;
+            $start = count($stop_departures) - 1;
             for($i = $start; $i >= 0 && $start - $i < 4; $i--)
             {
-                $diff = $this->departures[$i]->time->getTimestamp() -
-                        $now->getTimestamp(); 
+                $current = $stop_departures[$i];
+                $diff = $current->time->getTimestamp() - $now->getTimestamp(); 
                 if($diff < 5)
                 {
                     continue;
@@ -51,11 +68,11 @@
                 ];
                 if($diff < 21) //update
                 {
-                    $this->departures[$i] = $departure;
+                    $stop_departures[$i] = $departure;
                 }
                 else
                 {
-                    $this->departures[] = $departure;
+                    $stop_departures[] = $departure;
                 }
 
                 return;
@@ -69,8 +86,16 @@
 
         private function parse_vehicle($vehicle)
         {
+            if(!in_array(
+                config('vvt.types_conversion')[$vehicle->type],
+                config('vvt.transport_types'))
+            )
+            {
+                return;
+            }
             $route_id = $this->route_ids[$vehicle->type][$vehicle->no];
-            $stops = $this->get_close_stops($vehicle->coords, $route_id);
+            $stops = $this->get_close_stops($vehicle, $route_id);
+            // if(count($stops)) info("yeayeay");
 
             foreach($stops as $stop)
             {
@@ -111,12 +136,13 @@
     
             foreach($route_stops as $rs)
             {
+                info($rs->id);
                 $stop = \DB::table('stops')->where(
                     'stop_id', $rs->stop_id
                 )->get()[0];
                 $stop->direction = $rs->direction;
                 $stop->route_stop_id = $rs->id;
-                unset($stop->name);
+                //unset($stop->name);
                 $this->filtered_stops[$rs->route_id][] = $stop;
             }
         }
@@ -132,12 +158,12 @@
                     $stops[] = $stop;
                 }
             }
-            return [];
+            return $stops;
         }
 
         private function get_vehicles()
         {
-            $url = config('vvt.stops.lt_vehicles_url');
+            $url = config('vvt.stops_lt_vehicles_url');
             $data = $this->request->get($url);
             $data = explode("\n", $data);
             $vehicles = array();
@@ -149,11 +175,9 @@
                 $vehicles[] = (object)[
                     'type' => (int) $dt[0],//config('vvt.types_conversion')[$dt[0]],
                     'no' => $dt[1],
-                    'coords' => (object)[
-                        'lat' => ((int) $dt[3]) / 1000000,
-                        'lng' => ((int) $dt[2]) / 1000000,
-                    ],
-                    'angle' => (int) $dt[5],
+                    'lat' => ((int) $dt[3]) / 1000000,
+                    'lng' => ((int) $dt[2]) / 1000000,
+                    'degree' => (int) $dt[5],
                 ];
             }
 
