@@ -37,6 +37,7 @@ class track_departures extends Command
      */
     public function handle()
     {
-        echo "works";
+        $tracker = new \App\scripts\DeparturesTracker;
+        $tracker->loop();
     }
 }
