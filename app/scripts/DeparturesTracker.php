@@ -15,9 +15,13 @@
             info('init completed');
         }
 
-        public function loop()
+        public function loop($up_to = null)
         {
-            while((new \DateTime()) < config('vvt.track_up_to'))
+            if($up_to == null)
+            {
+                $up_to = config('vvt.track_up_to');
+            }
+            while((new \DateTime()) < $up_to)
             {
                 $vehicles = $this->get_vehicles();
                 info('loop');
