@@ -2,14 +2,14 @@
     return [
 
 	    'transport_subtypes' => [
-            'Greitasis autobusas',
-            'Autobusas',
+            //'Greitasis autobusas',
+            //'Autobusas',
             'Troleibusas',
         ],
 
         'transport_types' => [
             'trolleybus',
-            'bus',
+            //'bus',
         ],
 
         'types_conversion' => [
@@ -19,7 +19,7 @@
             2 => 'bus',
         ],
 
-        'stops.lt_vehicles_url' => 'https://stops.lt/vilnius/gps.txt',
+        'stops_lt_vehicles_url' => 'https://stops.lt/vilnius/gps.txt',
 
         'track_up_to' => (new DateTime())->setTime(23, 55),
 
