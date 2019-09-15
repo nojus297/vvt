@@ -21,7 +21,7 @@
 
         'stops_lt_vehicles_url' => 'https://stops.lt/vilnius/gps.txt',
 
-        'track_up_to' => (new DateTime())->setTime(23, 55),
+        'track_up_to' => \App\scripts\Now()->setTime(23, 55),
 
         'min_degree_calc_range' => 10,
 
