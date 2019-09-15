@@ -3,7 +3,8 @@
     namespace App\scripts; 
     class DeparturesTracker
     {
-        private $request, $filtered_stops, $degrees, $route_ids,  $departures;
+        private $request, $filtered_stops, $degrees, $route_ids;
+        public  $departures;
 
         public function __construct()
         {
@@ -21,10 +22,11 @@
             {
                 $up_to = config('vvt.track_up_to');
             }
-            while((new \DateTime()) < $up_to)
+            info($up_to->format('Y-m-d H:i:s'));
+            while((Now()) < $up_to)
             {
                 $vehicles = $this->get_vehicles();
-                info('loop');
+                //info('loop');
                 foreach($vehicles as $i => $vehicle)
                 {
                     //info("{$i} / " . count($vehicles));
@@ -32,17 +34,20 @@
                 }
                 sleep(4);
             }
+            return $this->departures;
         }
 
         private function process_departure($vehicle, $stop)
         {
-            info("{$vehicle->type} {$vehicle->no} arrived to {$stop->name}");
-            $now = new \DateTime();
+            //info("{$vehicle->type} {$vehicle->no} arrived to {$stop->name}");
+            $now = Now();
             if(!array_key_exists($stop->route_stop_id, $this->departures))
             {
                 $departure = (object)[
                     'time' => $now,
                     'hash' => $this->coord_hash($vehicle),
+                    'stop' => $stop->name,//debug
+                    'no' => $vehicle->no,//
                 ];
                 $this->departures[$stop->route_stop_id][] = $departure;
 
@@ -69,6 +74,8 @@
                 $departure = (object)[
                     'time' => $now,
                     'hash' => $this->coord_hash($vehicle),
+                    'stop' => $stop->name,//debug
+                    'no' => $vehicle->no,//
                 ];
                 if($diff < 21) //update
                 {
@@ -140,7 +147,7 @@
     
             foreach($route_stops as $rs)
             {
-                info($rs->id);
+                //info($rs->id);
                 $stop = \DB::table('stops')->where(
                     'stop_id', $rs->stop_id
                 )->get()[0];
