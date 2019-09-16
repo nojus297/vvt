@@ -23,6 +23,7 @@
 
         'trafi_api_url' => 'https://www.trafi.com/api/schedules/vilnius/',
 
+        // Warning: changing this will break DeparturesLoader
         'valid_tracks' => [
             'a-b',
             'b-a',
