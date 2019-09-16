@@ -24,14 +24,11 @@
 
             foreach($timetable->scheduledTimes as $departure)
             {
-                if($departure->trackId != $rs->direction)
-                {
-                    continue;
-                }
                 array_push($departures, [
                     'date' => date("Y-m-d"),
                     'route_stop_id' => $rs->id,  
                     'expected_time' => $departure->exactTime,
+                    'is_main' => ($departure->trackId == $rs->direction),
                 ]);
             }
             $table = \DB::table('departures');
