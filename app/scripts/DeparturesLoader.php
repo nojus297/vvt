@@ -8,7 +8,11 @@
 
         private function parse_route_stop($rs)
         {
-            $url = get_departures_url($rs->route_id, $rs->stop_id);
+            // Warning: the folowing depends on vvt.valid_tracks being only a-b
+            // or b-a
+            $url = get_departures_url(
+                $rs->route_id, $rs->stop_id, $rs->direction
+            );
             $raw = $this->request->get($url);
             $timetable = json_decode($raw)->scheduled->days[0];
             $departures = [];
