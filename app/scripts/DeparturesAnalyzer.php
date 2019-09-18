@@ -15,13 +15,26 @@ class DeparturesAnalyzer
 
         foreach($this->departures as $departure)
         {
-            
+            if(!array_key_exists($departure->id, $result->departures))
+            {
+                continue;
+            }
+            $this->analyze_departures(
+                $departure->id, $result->departures[$departure->id]
+            );
         }
     }
 
     private function analyze_departures($rs_id, $actual_times)
     {
-        
+        for($i = 0; $i < count($this->departures[$rs_id]); $i++)
+        {
+            if($i = count($actual_times))
+            {
+                break;
+            }
+            $this->departures[$i]->actual_time = $actual_times[$i]->time;
+        }
     }
 
     public function __construct()
