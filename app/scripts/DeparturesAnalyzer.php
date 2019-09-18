@@ -13,15 +13,32 @@ class DeparturesAnalyzer
     {
         $this->load_expected_times($result->started_at, $result->finished_at);
 
-        foreach($this->departures as $departure)
+        foreach($this->departures as $rs_id => $departures)
         {
-            if(!array_key_exists($departure->id, $result->departures))
+            if(!array_key_exists($rs_id, $result->departures))
             {
                 continue;
             }
             $this->analyze_departures(
-                $departure->id, $result->departures[$departure->id]
+                $rs_id, $result->departures[$rs_id]
             );
+        }
+    }
+
+    public function push()
+    {
+        foreach($this->departures as $departures)
+        {
+            foreach($departures as $departure)
+            {
+                \DB::table('departures')
+                    ->whereDate('date', $departure->date)
+                    ->where('route_stop_id', $departure->route_stop_id)
+                    ->whereTime('expected_time', $departure->expected_time)
+                    ->update(
+                        'actual_time', $departure->actual_time->format('H:i:s')
+                    );
+            }
         }
     }
 
