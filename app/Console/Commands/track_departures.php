@@ -38,6 +38,9 @@ class track_departures extends Command
     public function handle()
     {
         $tracker = new \App\scripts\DeparturesTracker;
-        $tracker->loop();
+        $result  = $tracker->get_actual_departures();
+        $analyzer = new \App\scripts\DeparturesAnalyzer();
+        $analyzer->analyze($result);
+        // $analyzer->push();
     }
 }
