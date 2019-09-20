@@ -11,6 +11,7 @@ class DeparturesAnalyzer
 
     public function analyze($result)
     {
+        $this->departures = [];
         $this->load_expected_times($result->started_at, $result->finished_at);
 
         foreach($this->departures as $rs_id => $departures)
@@ -19,9 +20,7 @@ class DeparturesAnalyzer
             {
                 continue;
             }
-            $this->analyze_departures(
-                $rs_id, $result->departures[$rs_id]
-            );
+            $this->analyze_departures($rs_id, $result->departures[$rs_id]);
         }
     }
 
@@ -46,25 +45,19 @@ class DeparturesAnalyzer
     {
         for($i = 0; $i < count($this->departures[$rs_id]); $i++)
         {
-            if($i = count($actual_times))
+            if($i == count($actual_times))
             {
                 break;
             }
-            $this->departures[$i]->actual_time = $actual_times[$i]->time;
+            $this->departures[$rs_id][$i]->actual_time
+                 = $actual_times[$i]->time;
         }
-    }
-
-    public function __construct()
-    {
-        $this->load_expected_times(new DateTime('2019-09-16 16:00:00'), new DateTime('2019-09-16 18:00:00'));
-        return $this->departures;
     }
 
     private function load_expected_times($from, $to)
     {
         foreach($this->get_route_stops() as $i => $route_stop)
         {
-            info("{$i} / 835?");
             $this->departures[$route_stop->id] = \DB::table('departures')
                 ->whereDate('date', $from->format('Y-m-d'))
                 ->where('route_stop_id', $route_stop->id)
