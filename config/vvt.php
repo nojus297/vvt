@@ -23,7 +23,7 @@
 
         'track_up_to' => \App\scripts\Now()->setTime(23, 55),
 
-        'min_degree_calc_range' => 10,
+        'min_degree_calc_range' => 20,
 
         'min_track_range' => 25,
 
