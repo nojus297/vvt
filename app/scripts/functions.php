@@ -42,4 +42,13 @@
     {
         return new \DateTime('now', new \DateTimeZone('Europe/Vilnius'));
     }
+    function normalize_angle($angle)
+    {
+        $angle = ($angle % 360 + 360) % 360;
+        if($angle > 180)
+        {
+            $angle -= 360;
+        }
+        return $angle;
+    }
 ?>
