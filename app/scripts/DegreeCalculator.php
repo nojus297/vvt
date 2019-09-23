@@ -37,7 +37,8 @@ class DegreeCalculator
         if(count($row->get()))
         {
             $old = $row->get()[0];
-            $new = $old->degree + ($degree - $old->degree) / ($old->count + 1);
+            $diff = normalize_angle($degree - $old->degree);
+            $new = $old->degree + ($diff) / ($old->count + 1);
             $row->update([
                 'degree' => $new,
                 'count' => $old->count + 1,
