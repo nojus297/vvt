@@ -6,6 +6,7 @@
 .vscode/
 .env
 .phpunit.result.cache
+TODO.md
 Homestead.json
 Homestead.yaml
 npm-debug.log
