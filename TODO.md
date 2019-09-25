@@ -15,3 +15,7 @@
 
 ### New features:
  - script to fill the actual_time columns
+    - increase vehicle detection range?
+    - don't track last and first stops for now, due to possible inconsistency
+    - more inteligent aligning of actual times (not just positional)
+    
