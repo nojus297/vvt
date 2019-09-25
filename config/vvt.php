@@ -25,9 +25,9 @@
 
         'min_degree_calc_range' => 10,
 
-        'min_track_range' => 25,
+        'min_track_range' => 80,
 
-        'max_track_degree_diff' => 36,
+        'max_track_degree_diff' => 40,
 
         'trafi_api_url' => 'https://www.trafi.com/api/schedules/vilnius/',
 
