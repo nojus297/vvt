@@ -30,12 +30,16 @@ class DeparturesAnalyzer
         {
             foreach($departures as $departure)
             {
+                if(!$departure->actual_time)
+                {
+                    continue;
+                }
                 \DB::table('departures')
                     ->whereDate('date', $departure->date)
                     ->where('route_stop_id', $departure->route_stop_id)
                     ->whereTime('expected_time', $departure->expected_time)
                     ->update(
-                        'actual_time', $departure->actual_time->format('H:i:s')
+                        ['actual_time' => $departure->actual_time->format('H:i:s')]
                     );
             }
         }
@@ -43,14 +47,51 @@ class DeparturesAnalyzer
 
     private function analyze_departures($rs_id, $actual_times)
     {
-        for($i = 0; $i < count($this->departures[$rs_id]); $i++)
+        if(!count($actual_times) || !count($this->departures[$rs_id]))
         {
-            if($i == count($actual_times))
+            return;
+        }
+        $i_ac = $i_dp = 0;
+        //echo($rs_id . '|');
+        // check too early
+        //if($rs_id == 30)
+        //{
+       //     echo "there";
+        //}
+        if(count($this->departures[$rs_id]) == 0){
+            
+        }
+        while(
+            $actual_times[$i_ac]->time
+            ->diff($this->departures[$rs_id][$i_dp]->exp) 
+            > config('vvt.max_too_early_offset'))
+        {
+            $i_dp++;
+            if($i_dp > count($this->departures[$rs_id]))
             {
-                break;
+                return;
             }
-            $this->departures[$rs_id][$i]->actual_time
-                 = $actual_times[$i]->time;
+        }
+        $this->departures[$rs_id][$i_dp]->actual_time = $actual_times[$i_ac]->time;
+        $i_ac++;
+        $i_dp++;
+
+
+        for(; $i_ac < count($actual_times); $i_ac++)
+        {
+            // is next departure expected time less than actual?
+            if($i_dp + 1 < count($this->departures[$rs_id]) &&
+               $this->departures[$rs_id][$i_dp]->exp <= $actual_times[$i_ac]->time)
+            {
+                continue;
+            }
+            if($i_dp < count($this->departures[$rs_id]))
+            {
+                $this->departures[$rs_id][$i_dp]->actual_time
+                 = $actual_times[$i_ac]->time;
+                $i_dp++;
+            }
+            
         }
     }
 
@@ -66,6 +107,12 @@ class DeparturesAnalyzer
                     $to->format('H:i:s'),
                 ])
                 ->get();
+            foreach($this->departures[$route_stop->id] as $dep)
+            {
+                $dep->exp = new DateTime(
+                    $from->format('Y-m-d') . ' ' . $dep->expected_time
+                );
+            }
         }
     }
 
