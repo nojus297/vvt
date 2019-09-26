@@ -178,7 +178,22 @@ class DeparturesTracker
     private function get_vehicles()
     {
         $url = config('vvt.stops_lt_vehicles_url');
-        $data = $this->request->get($url);
+        $tries = 0;
+        $data = null;
+        while(++$tries <= config('vvt.max_request_retries'))
+        {
+            try {
+                $data = $this->request->get($url);
+            } catch (Exeption $e){
+                \Log::warning("failed to load gps data (trie {$tries}");
+                continue;
+            }
+            break;
+        }
+        if(!$data)
+        {
+            return [];
+        }
         $data = explode("\n", $data);
         $vehicles = array();
 
