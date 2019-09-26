@@ -35,6 +35,10 @@
 
         'max_too_early_offset' => new DateInterval('PT5M'),
 
+        'max_request_retries' => 10,
+
+        'failed_request_delay_us' => (int)(0.1 * 1000000),
+
         'trafi_api_url' => 'https://www.trafi.com/api/schedules/vilnius/',
 
         // Warning: changing this will break DeparturesLoader
