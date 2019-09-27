@@ -52,22 +52,18 @@ class DeparturesAnalyzer
             return;
         }
         $i_ac = $i_dp = 0;
-        //echo($rs_id . '|');
-        // check too early
-        //if($rs_id == 30)
-        //{
-       //     echo "there";
-        //}
+
         if(count($this->departures[$rs_id]) == 0){
             
         }
+        // if the earliest arrival times are way earlier than expected
         while(
             $actual_times[$i_ac]->time
             ->diff($this->departures[$rs_id][$i_dp]->exp) 
             > config('vvt.max_too_early_offset'))
         {
-            $i_dp++;
-            if($i_dp > count($this->departures[$rs_id]))
+            $i_ac++;
+            if($i_ac > count($actual_times))
             {
                 return;
             }
@@ -77,19 +73,20 @@ class DeparturesAnalyzer
         $i_dp++;
 
 
-        for(; $i_ac < count($actual_times); $i_ac++)
+        for(; $i_ac < count($actual_times); $i_dp++)
         {
-            // is next departure expected time less than actual?
+            // is next departure expected time less than current actual?
             if($i_dp + 1 < count($this->departures[$rs_id]) &&
-               $this->departures[$rs_id][$i_dp]->exp <= $actual_times[$i_ac]->time)
+               $this->departures[$rs_id][$i_dp + 1]->exp
+                <= $actual_times[$i_ac]->time)
             {
-                continue;
+                continue; // then its better to assign it to the next departure
             }
             if($i_dp < count($this->departures[$rs_id]))
             {
                 $this->departures[$rs_id][$i_dp]->actual_time
                  = $actual_times[$i_ac]->time;
-                $i_dp++;
+                $i_ac++; // move actual_times index
             }
             
         }
