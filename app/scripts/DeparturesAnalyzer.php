@@ -88,6 +88,10 @@ class DeparturesAnalyzer
                  = $actual_times[$i_ac]->time;
                 $i_ac++; // move actual_times index
             }
+            else
+            {
+                break;
+            }
             
         }
     }
@@ -97,16 +101,17 @@ class DeparturesAnalyzer
         foreach($this->get_route_stops() as $i => $route_stop)
         {
             $this->departures[$route_stop->id] = \DB::table('departures')
-                ->whereDate('date', $from->format('Y-m-d'))
-                ->where('route_stop_id', $route_stop->id)
-                ->whereBetween('expected_time', [
-                    $from->format('H:i:s'),
-                    $to->format('H:i:s'),
-                ])
-                ->get();
+            ->whereDate('date', $from->format('Y-m-d'))
+            ->where('route_stop_id', $route_stop->id)
+            ->whereBetween('expected_time', [
+                $from->format('H:i:s'),
+                $to->format('H:i:s'),
+            ])
+            ->get();
             foreach($this->departures[$route_stop->id] as $dep)
             {
-                $dep->exp = new DateTime(
+                $dep->actual_time = null;
+                $dep->exp = lt_time(
                     $from->format('Y-m-d') . ' ' . $dep->expected_time
                 );
             }
