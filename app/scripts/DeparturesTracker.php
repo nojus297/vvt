@@ -80,7 +80,7 @@ class DeparturesTracker
                 'stop' => $stop->name,//debug
                 'no' => $vehicle->no,//
             ];
-            if($diff < 21) //update
+            if($diff < 36) //update
             {
                 $stop_departures[$i] = $departure;
             }
