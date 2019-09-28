@@ -42,6 +42,10 @@
     {
         return new \DateTime('now', new \DateTimeZone('Europe/Vilnius'));
     }
+    function lt_time($time = 'now')
+    {
+        return new \DateTime($time, new \DateTimeZone('Europe/Vilnius'));
+    }
     function normalize_angle($angle)
     {
         $angle = ($angle % 360 + 360) % 360;
@@ -50,5 +54,18 @@
             $angle -= 360;
         }
         return $angle;
+    }
+        function var_w($var, $file = 'serialized.txt')
+        {
+            $f = fopen($file, 'w');
+            fwrite($f, serialize($var));
+            fclose($f);
+        }
+    function var_r($file = 'serialized.txt')
+    {
+        $f = fopen($file, 'r');
+        $var = stream_get_contents($f);
+        fclose($f);
+        return unserialize($var);
     }
 ?>
