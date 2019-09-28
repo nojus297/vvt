@@ -69,7 +69,7 @@ class DeparturesTracker
         for($i = $start; $i >= 0 && $start - $i < 4; $i--)
         {
             $current = $stop_departures[$i];
-            $diff = $current->time->getTimestamp() - $now->getTimestamp(); 
+            $diff = $now->getTimestamp() - $current->time->getTimestamp(); 
             if($diff < 5)
             {
                 continue;
