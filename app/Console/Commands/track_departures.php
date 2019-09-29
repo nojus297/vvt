@@ -66,7 +66,7 @@ class track_departures extends Command
             $output = new stdClass;
             $output->actual_departures = $result->departures;
             $output->analyzed = $analyzer->departures;
-            return $output;
+            $this->line(\serialize($output));
         }
     }
 }
