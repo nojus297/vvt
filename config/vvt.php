@@ -35,7 +35,7 @@
 
         'max_too_early_offset' => new DateInterval('PT5M'),
 
-        'max_request_retries' => 10,
+        'max_request_retries' => 5,
 
         'failed_request_delay_us' => (int)(0.1 * 1000000),
 
