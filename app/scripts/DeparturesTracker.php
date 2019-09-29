@@ -184,8 +184,17 @@ class DeparturesTracker
         {
             try {
                 $data = $this->request->get($url);
-            } catch (Exeption $e){
-                \Log::warning("failed to load gps data (trie {$tries}");
+            }catch (Exeption $e){
+                \Log::warning("failed to load gps data (trie {$tries} e1");
+                usleep(\config('vvt.failed_request_delay_us'));
+                continue;
+            }catch (\Exeption $e){
+                \Log::warning("failed to load gps data (trie {$tries} e2");
+                usleep(\config('vvt.failed_request_delay_us'));
+                continue;
+            }catch (\GuzzleHttp\Exception\RequestException $e){
+                \Log::warning("failed to load gps data (trie {$tries} e3");
+                usleep(\config('vvt.failed_request_delay_us'));
                 continue;
             }
             break;
